@@ -9,9 +9,10 @@ def get_news():
     cursor = conn.cursor()
     
     cursor.execute("""
-                   SELECT id, title, url, published_at
-                   FROM articles
-                   ORDER BY published_at DESC
+                   SELECT a.id, a.title, a.url, s.summary, a.published_at, s.created_at
+                   FROM articles a
+                   LEFT JOIN summaries s ON a.id = s.article_id
+                   ORDER BY a.published_at DESC
                    LIMIT 20
                    """)
     
@@ -24,7 +25,9 @@ def get_news():
             "id": r[0],
             "title": r[1],
             "url": r[2],
-            "published_at": r[3]
+            "summary": r[3],
+            "published_at": r[4],
+            "created_at": r[5]
         })
         
     return news

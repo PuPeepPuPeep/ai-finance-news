@@ -14,3 +14,12 @@ CREATE TABLE IF NOT EXISTS articles (
     source_id INTEGER,
     FOREIGN KEY (source_id) REFERENCES sources(id)
 );
+
+CREATE TABLE IF NOT EXISTS summaries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    summary TEXT,
+    model TEXT,
+    created_at TEXT,
+    article_id INTEGER,
+    FOREIGN KEY (article_id) REFERENCES articles(id)
+);
