@@ -4,10 +4,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+MODEL_NAME = "gemini-3-flash-preview"
+
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def summarize_text(text: str) -> str:
-    model = "gemini-3-flash-preview"
     
     system_instruction = (
         "คุณคือ AI รายงานข่าวเศรษฐกิจมืออาชีพ สรุปข้อมูลด้วยภาษาทางการ "
@@ -25,7 +26,7 @@ def summarize_text(text: str) -> str:
     """
     
     response = client.models.generate_content(
-        model=model,
+        model=MODEL_NAME,
         contents=prompt,
         config={
             "system_instruction": system_instruction,
@@ -33,4 +34,4 @@ def summarize_text(text: str) -> str:
         }
     )
     
-    return response.text
+    return response.text, MODEL_NAME

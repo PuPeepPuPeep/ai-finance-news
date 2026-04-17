@@ -1,6 +1,7 @@
 from datetime import datetime
 from app.db.db import get_connection
-from app.services.ai_service import summarize_text
+from app.services.ai_service import summarize_text, MODEL_NAME
+from email.utils import parsedate_to_datetime
 
 def insert_source(name, rss_url):
     with get_connection() as conn:
@@ -21,6 +22,13 @@ def save_articles(entries, source_id):
         cursor = conn.cursor()
         
         for entry in entries:
+            #format timedate to ISO
+            raw_date = entry.get("published")
+            try:
+                date_time = parsedate_to_datetime(raw_date)
+                published_at = date_time.strftime('%Y-%m-%d %H:%M:%S')
+            except Exception:
+                published_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             cursor.execute("""
                         INSERT OR IGNORE INTO articles
                         (title, content, url, published_at, created_at, source_id)
@@ -29,8 +37,8 @@ def save_articles(entries, source_id):
                             entry.get("title"),
                             entry.get("summary", ""),
                             entry.get("link"),
-                            entry.get("published", ""),
-                            datetime.utcnow().isoformat(),
+                            published_at,
+                            datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                             source_id
                         ))
     
@@ -49,11 +57,11 @@ def generate_summaries_for_articles(limit=5):
         
         for article_id, content in rows:
             try:
-                summary = summarize_text(content)
+                summary, used_model= summarize_text(content)
                 
                 cursor.execute("""
                             INSERT INTO summaries (summary, model, created_at, article_id)
                             VALUES (?, ?, datetime('now'), ?)
-                            """, (summary, "gemini-3-flash-preview", article_id))
+                            """, (summary, used_model, article_id))
             except Exception as e:
                 print(f"Error on article {article_id}: {e}")
