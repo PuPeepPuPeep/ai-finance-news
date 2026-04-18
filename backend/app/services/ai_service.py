@@ -1,26 +1,34 @@
 from google import genai
 import os
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
-MODEL_NAME = "gemini-3-flash-preview"
+MODEL_NAME = "gemini-3.1-flash-lite-preview"
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-def summarize_text(text: str) -> str:
+def summarize_text(text: str):
     
-    system_instruction = (
-        "คุณคือ AI รายงานข่าวเศรษฐกิจมืออาชีพ สรุปข้อมูลด้วยภาษาทางการ "
-        "ห้ามพูดคุยโต้ตอบกับผู้ใช้ ให้ส่งคืนเฉพาะเนื้อหาข่าวที่สรุปแล้วเท่านั้น "
-        "ห้ามมีคำเกริ่นนำ เช่น 'นี่คือสรุป' หรือ 'บทสรุปข่าวมีดังนี้'"
-    )
+    standard_topics = ["Fed", "Crypto", "Stock Market", "Inflation", "Gold", "Oil", "Tech", "Banking"]
     
     prompt = f"""
-    จงสรุปข่าวนี้ตามโครงสร้าง:
-    • [เหตุการณ์สำคัญ]: (สรุปสิ่งที่เกิดขึ้นจริง ใคร ทำอะไร ที่ไหน อย่างไร ด้วยภาษาทางการ)
-    • [ผลกระทบต่อตลาด]: (วิเคราะห์ผลกระทบต่อดัชนี, ราคาหุ้น, ค่าเงิน หรือความเชื่อมั่นนักลงทุน)
-    • [แนวโน้ม]: (ระบุว่าเป็น "บวก", "ลบ" หรือ "เป็นกลาง" ตามด้วยนัยสำคัญสั้นๆ)
+    คุณคือบรรณาธิการข่าวเศรษฐกิจอาวุโส จงวิเคราะห์ข่าวนี้และตอบกลับในรูปแบบ JSON เท่านั้น
+    
+    โครงสร้าง JSON:
+    {{
+        "summary": "
+            • [เหตุการณ์สำคัญ]: (สรุปสิ่งที่เกิดขึ้นจริง ใคร ทำอะไร ที่ไหน อย่างไร ด้วยภาษาทางการ)
+            • [ผลกระทบต่อตลาด]: (วิเคราะห์ผลกระทบต่อดัชนี, ราคาหุ้น, ค่าเงิน หรือความเชื่อมั่นนักลงทุน)
+            • [แนวโน้ม]: (ระบุว่าเป็น "บวก", "ลบ" หรือ "เป็นกลาง" เท่านั้น)",
+        "topics": ["ชื่อหัวข้อ1", "ชื่อหัวข้อ2"]
+    }}
+    
+    กฎการเลือกหัวข้อ:
+    - เลือกจากรายการนี้เป็นหลัก: {", ".join(standard_topics)}
+    - หากไม่ตรงเลย สามารถสร้างหัวข้อใหม่ที่สั้นและกระชับได้ (ไม่เกิน 2-3 หัวข้อ)
+    
 
     News: {text}
     """
@@ -28,10 +36,9 @@ def summarize_text(text: str) -> str:
     response = client.models.generate_content(
         model=MODEL_NAME,
         contents=prompt,
-        config={
-            "system_instruction": system_instruction,
-            "temperature": 0.1,
-        }
+        config={"response_mime_type": "application/json"}
     )
     
-    return response.text, MODEL_NAME
+    #parse string to python dictionary
+    result = json.loads(response.text)
+    return result, MODEL_NAME

@@ -57,11 +57,32 @@ def generate_summaries_for_articles(limit=5):
         
         for article_id, content in rows:
             try:
-                summary, used_model= summarize_text(content)
+                result, model_used= summarize_text(content)
+                summary = result.get('summary')
+                topics = result.get('topics', [])
                 
                 cursor.execute("""
-                            INSERT INTO summaries (summary, model, created_at, article_id)
+                            INSERT INTO summaries (summary, model_used, created_at, article_id)
                             VALUES (?, ?, datetime('now'), ?)
-                            """, (summary, used_model, article_id))
+                            """, (summary, model_used, article_id))
+                
+                for topic in topics:
+                    cursor.execute("""
+                                   INSERT OR IGNORE INTO topics (name) 
+                                   VALUES (?)
+                                   """, (topic.strip(),))
+                    
+                    cursor.execute("SELECT id FROM topics WHERE name = ?", (topic.strip(),))
+                    topic_id = cursor.fetchone()[0]
+                    
+                    cursor.execute("""
+                                   INSERT OR IGNORE INTO article_topics (article_id, topic_id)
+                                   VALUES (?, ?)
+                                   """, (article_id, topic_id))
+                    
+                conn.commit()
+                print(f"Success: Article {article_id} classified in to {topics}")
+                
             except Exception as e:
+                conn.rollback()
                 print(f"Error on article {article_id}: {e}")
