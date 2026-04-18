@@ -3,6 +3,24 @@ from app.db.db import get_connection
 
 router = APIRouter()
 
+@router.get("/news/summary-6h")
+def get_lastest_6h_summary():
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("""
+                   SELECT summary 
+                   FROM time_summaries
+                   ORDER BY id DESC
+                   LIMIT 1
+                   """)
+    row = cursor.fetchone()
+    conn.close()
+    
+    if row:
+        return {"summary": row[0]}
+    return {"summary": "ยังไม่มีสรุป"}
+
 @router.get("/news")
 def get_news(topic: str = None):
     conn = get_connection()
@@ -68,3 +86,4 @@ def get_news_detail(article_id: int):
         "url": row[3],
         "published_at": row[4]
     }
+    

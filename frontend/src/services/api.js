@@ -15,3 +15,13 @@ export const getNewsDetail = async (id) => {
     const response = await axios.get(`${API_BASE_URL}/news/${id}`)
     return response.data
 }
+
+export const getTimeSummary = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/news/summary-6h`)
+        return response.data
+    } catch (error) {
+        console.error("Error fetching time summary:", error)
+        return null
+    }
+}

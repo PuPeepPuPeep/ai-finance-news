@@ -42,3 +42,24 @@ def summarize_text(text: str):
     #parse string to python dictionary
     result = json.loads(response.text)
     return result, MODEL_NAME
+
+def summarize_6h_period(summaries_list: list):
+    if not summaries_list:
+        return None
+    
+    combined_text = "\n---\n".join(summaries_list)
+    
+    prompt = f"""
+    คุณคือผู้อำนวยการฝ่ายข่าว จงสรุป "ภาพรวมตลาด" จากหัวข้อข่าวและบทสรุปย่อยต่อไปนี้
+    ให้เป็นบทวิเคราะห์สั้นๆ 1 ย่อหน้า (ไม่เกิน 5 ประโยค) 
+    ที่บอกว่าเทรนด์หลักในช่วง 6 ชั่วโมงที่ผ่านมาคืออะไร และนักลงทุนควรจับตาเรื่องไหนเป็นพิเศษ
+    
+    News:
+    {combined_text}
+    """
+    
+    response = client.models.generate_content(
+        model=MODEL_NAME,
+        contents=prompt
+    )
+    return response.text
