@@ -4,17 +4,29 @@ from app.db.db import get_connection
 router = APIRouter()
 
 @router.get("/news")
-def get_news():
+def get_news(topic: str = None):
     conn = get_connection()
     cursor = conn.cursor()
     
-    cursor.execute("""
-                   SELECT a.id, a.title, a.url, s.summary, a.published_at, s.created_at
-                   FROM articles a
-                   LEFT JOIN summaries s ON a.id = s.article_id
-                   ORDER BY a.published_at DESC
-                   LIMIT 20
-                   """)
+    if topic and topic != "All":
+        cursor.execute("""
+                       SELECT a.id, a.title, a.url, s.summary, a.published_at, s.created_at
+                       FROM articles a
+                       JOIN article_topics at ON a.id = at.article_id
+                       JOIN topics t ON at.topic_id = t.id
+                       LEFT JOIN summaries s ON a.id = s.article_id
+                       WHERE t.name = ?
+                       ORDER BY a.published_at DESC
+                       LIMIT 10
+                       """, (topic,))
+    else:
+        cursor.execute("""
+                       SELECT a.id, a.title, a.url, s.summary, a.published_at, s.created_at
+                       FROM articles a
+                       LEFT JOIN summaries s ON a.id = s.article_id
+                       ORDER BY a.published_at DESC
+                       LIMIT 20
+                       """)
     
     rows = cursor.fetchall()
     conn.close()
