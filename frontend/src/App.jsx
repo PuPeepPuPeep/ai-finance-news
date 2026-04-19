@@ -3,6 +3,7 @@ import { getNews, getTimeSummary } from './services/api'
 import Header from './components/Header'
 import TimeSummary from './components/TimeSummary'
 import NewsCard from './components/NewsCard'
+import Footer from './components/Footer'
 
 function App() {
   const [news, setNews] = useState([])
@@ -22,10 +23,10 @@ function App() {
     }
   }, [selectedTopic])
   return (
-    <div className='min-h-screen bg-slate-50'>
+    <div className='min-h-screen bg-slate-50 flex flex-col'>
       <Header activeTopic={selectedTopic} onSelectTopic={setSelectedTopic} />
 
-      <main className='max-w-6xl mx-auto p-6'>
+      <main className='flex-grow max-w-6xl mx-auto p-6 w-full'>
 
         {selectedTopic === 'All' && <TimeSummary summary={timeSummary} />}
 
@@ -41,6 +42,9 @@ function App() {
           ))}
         </div>
       </main>
+
+      <Footer/>
+
     </div>
   )
     
