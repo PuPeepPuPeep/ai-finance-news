@@ -4,12 +4,12 @@ import { AiOutlineClose } from "react-icons/ai"
 
 function Header({ activeTopic, onSelectTopic }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [topics, setTopics] = useState(["All"])
+    const [topics, setTopics] = useState(["Latest"])
 
     useEffect(() => {
         fetch("http://localhost:8000/topics")
         .then((res) => res.json())
-        .then((data) => setTopics(["All", ...data]))
+        .then((data) => setTopics(["Latest", ...data]))
         .catch((err) => console.error("Error feching topics:", err))
     }, [])
 

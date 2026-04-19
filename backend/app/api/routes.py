@@ -37,10 +37,11 @@ def get_news(topic: str = None):
     conn = get_connection()
     cursor = conn.cursor()
     
-    if topic and topic != "All":
+    if topic and topic != "Latest":
         cursor.execute("""
-                       SELECT a.id, a.title, a.url, s.summary, a.published_at, s.created_at
+                       SELECT a.id, a.title, a.url, s.summary, a.published_at, s.created_at, src.name, s.model_used
                        FROM articles a
+                       LEFT JOIN sources src ON a.source_id = src.id
                        JOIN article_topics at ON a.id = at.article_id
                        JOIN topics t ON at.topic_id = t.id
                        LEFT JOIN summaries s ON a.id = s.article_id
@@ -50,8 +51,9 @@ def get_news(topic: str = None):
                        """, (topic,))
     else:
         cursor.execute("""
-                       SELECT a.id, a.title, a.url, s.summary, a.published_at, s.created_at
+                       SELECT a.id, a.title, a.url, s.summary, a.published_at, s.created_at, src.name, s.model_used
                        FROM articles a
+                       LEFT JOIN sources src ON a.source_id = src.id
                        LEFT JOIN summaries s ON a.id = s.article_id
                        ORDER BY a.published_at DESC
                        LIMIT 20
@@ -68,7 +70,9 @@ def get_news(topic: str = None):
             "url": r[2],
             "summary": r[3],
             "published_at": r[4],
-            "created_at": r[5]
+            "created_at": r[5],
+            "source_name": r[6],
+            "model_used": r[7]
         })
         
     return news

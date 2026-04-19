@@ -7,12 +7,12 @@ import Footer from './components/Footer'
 
 function App() {
   const [news, setNews] = useState([])
-  const [selectedTopic, setSelectedTopic] = useState('All')
+  const [selectedTopic, setSelectedTopic] = useState('Latest')
   const [timeSummary, setTimeSummary] = useState('')
 
   useEffect(() => {
     getNews(selectedTopic).then(data => setNews(data))
-    if (selectedTopic === 'All'){
+    if (selectedTopic === 'Latest'){
       getTimeSummary().then(data => {
         if (data && data.summary) {
           setTimeSummary(data.summary)
@@ -28,11 +28,11 @@ function App() {
 
       <main className='flex-grow max-w-6xl mx-auto p-6 w-full'>
 
-        {selectedTopic === 'All' && <TimeSummary summary={timeSummary} />}
+        {selectedTopic === 'Latest' && <TimeSummary summary={timeSummary} />}
 
         <header className='mb-8'>
           <h1 className='text-2xl font-bold text-slate-900'>
-            {selectedTopic === 'All' ? 'ข่าวล่าสุด' : `ข่าวหมวดหมู่: ${selectedTopic}`}
+            {selectedTopic === 'Latest' ? 'ข่าวล่าสุด' : `ข่าวหมวดหมู่: ${selectedTopic}`}
           </h1>
         </header>
         
