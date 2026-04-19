@@ -1,11 +1,17 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { FaBars, FaGithub } from "react-icons/fa"
 import { AiOutlineClose } from "react-icons/ai"
 
-const topics = ["All", "Fed", "Crypto", "Stock Market", "Inflation", "Gold", "Tech"]
-
 function Header({ activeTopic, onSelectTopic }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [topics, setTopics] = useState(["All"])
+
+    useEffect(() => {
+        fetch("http://localhost:8000/topics")
+        .then((res) => res.json())
+        .then((data) => setTopics(["All", ...data]))
+        .catch((err) => console.error("Error feching topics:", err))
+    }, [])
 
     return (
         <header className="sticky top-0 z-50 bg-gray-800 border-b border-slate-200">
@@ -62,7 +68,7 @@ function Header({ activeTopic, onSelectTopic }) {
 
             {/* Desktop */}
             <nav className="hidden md:block bg-white border-t border-slate-100">
-                <div className="max-w-6xl mx-auto px-4 py-3 flex gap-2">
+                <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap gap-2">
                     {topics.map((topic) => (
                         <button
                             key={topic}

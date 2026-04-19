@@ -3,6 +3,17 @@ from app.db.db import get_connection
 
 router = APIRouter()
 
+@router.get("/topics")
+def get_topics():
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT name FROM topics ORDER BY name ASC")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    return [r[0] for r in rows]
+
 @router.get("/news/summary-6h")
 def get_lastest_6h_summary():
     conn = get_connection()
