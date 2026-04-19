@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.db.db import get_connection
 from app.services.ai_service import summarize_text, MODEL_NAME, summarize_6h_period
 from email.utils import parsedate_to_datetime
@@ -91,7 +91,7 @@ def create_and_save_6h_summary():
     conn = get_connection()
     cursor = conn.cursor()
     
-    end_time = datetime.now()
+    end_time = datetime.now(timezone.utc)
     start_time = end_time - timedelta(hours=6)
     
     cursor.execute("""
