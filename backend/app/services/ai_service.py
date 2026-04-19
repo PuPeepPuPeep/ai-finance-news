@@ -62,4 +62,4 @@ def summarize_6h_period(summaries_list: list):
         model=MODEL_NAME,
         contents=prompt
     )
-    return response.text
+    return response.text, MODEL_NAME

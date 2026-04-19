@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS article_topics (
 CREATE TABLE IF NOT EXISTS time_summaries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     summary TEXT,
+    model_used TEXT,
     start_time TEXT,
     end_time TEXT,
     created_at TEXT

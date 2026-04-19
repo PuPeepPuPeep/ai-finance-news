@@ -108,12 +108,12 @@ def create_and_save_6h_summary():
     article_ids = [r[0] for r in rows]
     summaries = [r[1] for r in rows]
     
-    final_summary = summarize_6h_period(summaries)
+    final_summary, model_used = summarize_6h_period(summaries)
     
     cursor.execute("""
-                   INSERT INTO time_summaries (summary, start_time, end_time, created_at)
-                   VALUES (?, ?, ?, datetime('now'))
-                   """, (final_summary, start_time.strftime('%Y-%m-%d %H:%M:%S'), end_time.strftime('%Y-%m-%d %H:%M:%S')))
+                   INSERT INTO time_summaries (summary, model_used, start_time, end_time, created_at)
+                   VALUES (?, ?, ?, datetime('now'), ?)
+                   """, (final_summary, model_used, start_time.strftime('%Y-%m-%d %H:%M:%S'), end_time.strftime('%Y-%m-%d %H:%M:%S')))
     
     time_summary_id = cursor.lastrowid
     
