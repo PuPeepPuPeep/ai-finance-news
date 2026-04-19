@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getNews, getTimeSummary } from './services/api'
-import Navbar from './components/Navbar'
+import Header from './components/Header'
 import TimeSummary from './components/TimeSummary'
 import NewsCard from './components/NewsCard'
 
@@ -23,7 +23,7 @@ function App() {
   }, [selectedTopic])
   return (
     <div className='min-h-screen bg-slate-50'>
-      <Navbar activeTopic={selectedTopic} onSelectTopic={setSelectedTopic} />
+      <Header activeTopic={selectedTopic} onSelectTopic={setSelectedTopic} />
 
       <main className='max-w-6xl mx-auto p-6'>
 
