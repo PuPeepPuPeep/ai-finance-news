@@ -14,21 +14,22 @@ function App() {
     getNews(selectedTopic).then(data => setNews(data))
     if (selectedTopic === 'Latest'){
       getTimeSummary().then(data => {
-        if (data && data.summary) {
-          setTimeSummary(data.summary)
+        if (data) {
+          setTimeSummary(data)
         }
       })
     } else {
       setTimeSummary('')
     }
   }, [selectedTopic])
+
   return (
     <div className='min-h-screen bg-slate-50 flex flex-col'>
       <Header activeTopic={selectedTopic} onSelectTopic={setSelectedTopic} />
 
       <main className='flex-grow max-w-6xl mx-auto p-6 w-full'>
 
-        {selectedTopic === 'Latest' && <TimeSummary summary={timeSummary} />}
+        {selectedTopic === 'Latest' && <TimeSummary data={timeSummary} />}
 
         <header className='mb-8'>
           <h1 className='text-2xl font-bold text-slate-900'>

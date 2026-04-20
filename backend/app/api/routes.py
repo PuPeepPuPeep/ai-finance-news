@@ -20,7 +20,7 @@ def get_lastest_6h_summary():
     cursor = conn.cursor()
     
     cursor.execute("""
-                   SELECT summary 
+                   SELECT summary, created_at, model_used
                    FROM time_summaries
                    ORDER BY id DESC
                    LIMIT 1
@@ -29,8 +29,17 @@ def get_lastest_6h_summary():
     conn.close()
     
     if row:
-        return {"summary": row[0]}
-    return {"summary": "ยังไม่มีสรุป"}
+        return {
+            "summary": row[0],
+            "created_at": row[1],
+            "model_used": row[2]
+        }
+    return {
+        "summary": "ยังไม่มีสรุป",
+        "created_at": None,
+        "medel_used": None
+
+    }
 
 @router.get("/news")
 def get_news(topic: str = None):
@@ -84,29 +93,3 @@ def get_news(topic: str = None):
         })
         
     return news
-
-@router.get("/news/{article_id}")
-def get_news_detail(article_id: int):
-    conn = get_connection()
-    cursor = conn.cursor()
-    
-    cursor.execute("""
-                   SELECT id, title, content, url, published_at
-                   FROM articles
-                   WHERE id = ?
-                   """, (article_id,))
-    
-    row = cursor.fetchone()
-    conn.close()
-    
-    if not row:
-        return {"error": "Not found"}
-    
-    return {
-        "id": row[0],
-        "title": row[1],
-        "content": row[2],
-        "url": row[3],
-        "published_at": row[4]
-    }
-    
