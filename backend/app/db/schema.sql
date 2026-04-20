@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS articles (
 CREATE TABLE IF NOT EXISTS summaries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     summary TEXT,
+    sentiment TEXT,
     model_used TEXT,
     created_at TEXT,
     article_id INTEGER,

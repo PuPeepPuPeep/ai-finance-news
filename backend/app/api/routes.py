@@ -37,27 +37,34 @@ def get_news(topic: str = None):
     conn = get_connection()
     cursor = conn.cursor()
     
+    base_query = """
+        SELECT a.id, a.title, a.url, s.summary, a.published_at,
+            src.name as source_name, s.model_used, s.sentiment,
+            GROUP_CONCAT(t.name) as topics
+        FROM articles a
+        LEFT JOIN sources src ON a.source_id = src.id
+        LEFT JOIN summaries s ON a.id = s.article_id
+        LEFT JOIN article_topics at ON a.id = at.article_id
+        LEFT JOIN topics t ON at.topic_id = t.id    
+    """
+    
     if topic and topic != "Latest":
-        cursor.execute("""
-                       SELECT a.id, a.title, a.url, s.summary, a.published_at, s.created_at, src.name, s.model_used
-                       FROM articles a
-                       LEFT JOIN sources src ON a.source_id = src.id
-                       JOIN article_topics at ON a.id = at.article_id
-                       JOIN topics t ON at.topic_id = t.id
-                       LEFT JOIN summaries s ON a.id = s.article_id
-                       WHERE t.name = ?
-                       ORDER BY a.published_at DESC
-                       LIMIT 10
-                       """, (topic,))
+        query = base_query + """ WHERE a.id IN (
+                                SELECT article_id 
+                                FROM article_topics at2 
+                                JOIN topics t2 ON at2.topic_id = t2.id
+                                WHERE t2.name = ?)
+                                GROUP BY a.id
+                                ORDER BY a.published_at DESC 
+                                LIMIT 10
+                                """
+        cursor.execute(query, (topic,))
     else:
-        cursor.execute("""
-                       SELECT a.id, a.title, a.url, s.summary, a.published_at, s.created_at, src.name, s.model_used
-                       FROM articles a
-                       LEFT JOIN sources src ON a.source_id = src.id
-                       LEFT JOIN summaries s ON a.id = s.article_id
-                       ORDER BY a.published_at DESC
-                       LIMIT 20
-                       """)
+        query = base_query + """ GROUP BY a.id 
+                                ORDER BY a.published_at DESC 
+                                LIMIT 20
+                                """
+        cursor.execute(query)
     
     rows = cursor.fetchall()
     conn.close()
@@ -70,9 +77,10 @@ def get_news(topic: str = None):
             "url": r[2],
             "summary": r[3],
             "published_at": r[4],
-            "created_at": r[5],
-            "source_name": r[6],
-            "model_used": r[7]
+            "source_name": r[5],
+            "model_used": r[6],
+            "sentiment": r[7],
+            "topics": r[8].split(',') if r[8] else []
         })
         
     return news

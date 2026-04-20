@@ -59,12 +59,13 @@ def generate_summaries_for_articles(limit=5):
             try:
                 result, model_used= summarize_text(content)
                 summary = result.get('summary')
+                sentiment = result.get('sentiment')
                 topics = result.get('topics', [])
                 
                 cursor.execute("""
-                            INSERT INTO summaries (summary, model_used, created_at, article_id)
-                            VALUES (?, ?, datetime('now'), ?)
-                            """, (summary, model_used, article_id))
+                            INSERT INTO summaries (summary, sentiment, model_used, created_at, article_id)
+                            VALUES (?, ?, ?, datetime('now'), ?)
+                            """, (summary, sentiment, model_used, article_id))
                 
                 for topic in topics:
                     cursor.execute("""
