@@ -2,6 +2,8 @@ from datetime import datetime, timedelta, timezone
 from app.db.db import get_connection
 from app.services.ai_service import summarize_text, MODEL_NAME, summarize_6h_period
 from email.utils import parsedate_to_datetime
+import time
+import logging
 
 def insert_source(name, rss_url):
     with get_connection() as conn:
@@ -42,7 +44,9 @@ def save_articles(entries, source_id):
                             source_id
                         ))
     
-def generate_summaries_for_articles(limit=5):
+def generate_summaries_for_articles(limit=10):
+    summary_count = 0
+    
     with get_connection() as conn:
         cursor = conn.cursor()
         
@@ -82,12 +86,17 @@ def generate_summaries_for_articles(limit=5):
                                    """, (article_id, topic_id))
                     
                 conn.commit()
-                print(f"Success: Article {article_id} classified in to {topics}")
+                summary_count += 1
+                logging.info(f"Summary article {article_id} classified in to {topics}")
+                time.sleep(2)
                 
             except Exception as e:
                 conn.rollback()
-                print(f"Error on article {article_id}: {e}")
-                
+                logging.error(f"Error on article {article_id}: {str(e)}")
+                time.sleep(5)
+    
+    return summary_count
+    
 def create_and_save_6h_summary():
     conn = get_connection()
     cursor = conn.cursor()
