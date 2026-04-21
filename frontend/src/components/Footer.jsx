@@ -11,7 +11,7 @@ function Footer() {
                     href="https://github.com"
                     target="_blank"
                     rel="noreferrer"
-                    className="text-slate-600 hover:text-black transition-colors"
+                    className="text-white hover:text-slate-600 transition-colors"
                 >
                     <FaGithub className="w-8 h-8" />
                 </a>
