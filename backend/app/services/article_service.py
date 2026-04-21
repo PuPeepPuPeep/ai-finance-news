@@ -45,7 +45,9 @@ def save_articles(entries, source_id):
                             datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                             source_id
                         ))
-            news_count += 1
+            
+            if cursor.rowcount > 0:
+                news_count += 1
             
     return news_count
     
