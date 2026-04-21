@@ -20,6 +20,8 @@ def insert_source(name, rss_url):
         return source_id
 
 def save_articles(entries, source_id):
+    news_count = 0
+    
     with get_connection() as conn:
         cursor = conn.cursor()
         
@@ -43,8 +45,11 @@ def save_articles(entries, source_id):
                             datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                             source_id
                         ))
+            news_count += 1
+            
+    return news_count
     
-def generate_summaries_for_articles(limit=10):
+def generate_summaries_for_articles():
     summary_count = 0
     
     with get_connection() as conn:
@@ -54,8 +59,7 @@ def generate_summaries_for_articles(limit=10):
                     SELECT id, content
                     FROM articles
                     WHERE id NOT IN (SELECT article_id FROM summaries)
-                    LIMIT ?
-                    """, (limit,))
+                    """)
         
         rows = cursor.fetchall()
         
@@ -88,12 +92,12 @@ def generate_summaries_for_articles(limit=10):
                 conn.commit()
                 summary_count += 1
                 logging.info(f"Summary article {article_id} classified in to {topics}")
-                time.sleep(2)
+                time.sleep(10)
                 
             except Exception as e:
                 conn.rollback()
                 logging.error(f"Error on article {article_id}: {str(e)}")
-                time.sleep(5)
+                time.sleep(20)
     
     return summary_count
     
