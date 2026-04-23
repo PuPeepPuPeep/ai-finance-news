@@ -4,8 +4,6 @@ from app.jobs.workflow import run_main_workflow, run_6h_summary
 
 scheduler = BackgroundScheduler(timezone="Asia/Bangkok")
 
-# cron_trigger = CronTrigger(hour='0,6,12,18', minute=0)
-
 scheduler.add_job(
     run_main_workflow,
     trigger='interval',
