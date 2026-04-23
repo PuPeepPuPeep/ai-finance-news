@@ -74,7 +74,7 @@ function Header({ activeTopic, onSelectTopic }) {
                     <span className="text-xl font-bold text-blue-600">AI News</span>
                 </div>
                 <a
-                    href="https://github.com"
+                    href="https://github.com/PuPeepPuPeep/ai-finance-news"
                     target="_blank"
                     rel="noreferrer"
                     className="text-white hover:text-slate-600 transition-colors"

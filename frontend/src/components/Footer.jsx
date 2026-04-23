@@ -8,7 +8,7 @@ function Footer() {
                     เนื้อหาที่สรุปโดย AI อาจมีความผิดพลาดได้
                 </span>
                 <a
-                    href="https://github.com"
+                    href="https://github.com/PuPeepPuPeep/ai-finance-news"
                     target="_blank"
                     rel="noreferrer"
                     className="text-white hover:text-slate-600 transition-colors"
