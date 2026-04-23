@@ -111,14 +111,13 @@ def create_and_save_6h_summary():
         
         end_time = datetime.now(timezone.utc)
         start_time = end_time - timedelta(hours=6)
-        now_utc = datetime.now(timezone.utc)
         
         cursor.execute("""
                     SELECT a.id, s.summary
                     FROM articles a
                     JOIN summaries s ON a.id = s.article_id
                     WHERE a.published_at >= ?
-                    """, (start_time.strftime('%Y-%m-%d %H:%M:%S'),))
+                    """, (start_time.isoformat(),))
         
         rows = cursor.fetchall()
         if not rows:
@@ -132,7 +131,8 @@ def create_and_save_6h_summary():
         cursor.execute("""
                     INSERT INTO time_summaries (summary, model_used, start_time, end_time, created_at)
                     VALUES (?, ?, ?, ?, ?)
-                    """, (final_summary, model_used, start_time.isoformat()), end_time.isoformat(), now_utc.isoformat())
+                    """, (final_summary, model_used, start_time.isoformat(), end_time.isoformat(), datetime.now(timezone.utc).isoformat()
+                    ))
         
         time_summary_id = cursor.lastrowid
         
@@ -143,5 +143,4 @@ def create_and_save_6h_summary():
                         """, (time_summary_id, aid))
             
         conn.commit()
-        conn.close()
     return "Summary saved"
