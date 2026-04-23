@@ -30,9 +30,11 @@ def save_articles(entries, source_id):
             raw_date = entry.get("published")
             try:
                 date_time = parsedate_to_datetime(raw_date)
-                published_at = date_time.strftime('%Y-%m-%d %H:%M:%S')
+                if date_time.tzinfo is None:
+                    date_time = date_time.replace(tzinfo=timezone.utc)
+                published_at = date_time.isoformat()
             except Exception:
-                published_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                published_at = datetime.now(timezone.utc).isoformat()
             cursor.execute("""
                         INSERT OR IGNORE INTO articles
                         (title, content, url, published_at, created_at, source_id)
@@ -42,7 +44,7 @@ def save_articles(entries, source_id):
                             entry.get("summary", ""),
                             entry.get("link"),
                             published_at,
-                            datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            datetime.now(timezone.utc).isoformat(),
                             source_id
                         ))
             
@@ -109,6 +111,7 @@ def create_and_save_6h_summary():
     
     end_time = datetime.now(timezone.utc)
     start_time = end_time - timedelta(hours=6)
+    now_utc = datetime.now(timezone.utc)
     
     cursor.execute("""
                    SELECT a.id, s.summary
@@ -128,8 +131,8 @@ def create_and_save_6h_summary():
     
     cursor.execute("""
                    INSERT INTO time_summaries (summary, model_used, start_time, end_time, created_at)
-                   VALUES (?, ?, ?, datetime('now'), ?)
-                   """, (final_summary, model_used, start_time.strftime('%Y-%m-%d %H:%M:%S'), end_time.strftime('%Y-%m-%d %H:%M:%S')))
+                   VALUES (?, ?, ?, ?, ?)
+                   """, (final_summary, model_used, start_time.isoformat()), end_time.isoformat(), now_utc.isoformat())
     
     time_summary_id = cursor.lastrowid
     
