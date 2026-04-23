@@ -23,7 +23,8 @@ function TimeSummary({ data }) {
                         hour: '2-digit',
                         minute: '2-digit',
                         day: 'numeric',
-                        month: 'short'
+                        month: 'short',
+                        timeZone: 'Asia/Bangkok'
                     })}
                 </span>
             </div>

@@ -47,7 +47,8 @@ function NewsCard({data}) {
                     <span className="text-xs text-slate-400">
                         {new Date(data.published_at).toLocaleString('th-TH', {
                             dateStyle: 'medium',
-                            timeStyle: 'short'
+                            timeStyle: 'short',
+                            timeZone: 'Asia/Bangkok'
                         })}
                     </span>
 
