@@ -1,5 +1,6 @@
 import argparse
 import logging
+import sys
 from app.services.article_service import (
     insert_source, save_articles,
     generate_summaries_for_articles,
@@ -9,10 +10,13 @@ from app.fetcher.cnbc import fetch_cnbc_news
 
 #config Logging
 logging.basicConfig(
-    filename='automation.log',
-    filemode='a',
+    # filename='automation.log',
+    # filemode='a',
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
 )
 
 def run_main_workflow():
