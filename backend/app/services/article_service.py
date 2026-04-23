@@ -106,42 +106,42 @@ def generate_summaries_for_articles():
     return summary_count
     
 def create_and_save_6h_summary():
-    conn = get_connection()
-    cursor = conn.cursor()
-    
-    end_time = datetime.now(timezone.utc)
-    start_time = end_time - timedelta(hours=6)
-    now_utc = datetime.now(timezone.utc)
-    
-    cursor.execute("""
-                   SELECT a.id, s.summary
-                   FROM articles a
-                   JOIN summaries s ON a.id = s.article_id
-                   WHERE a.published_at >= ?
-                   """, (start_time.strftime('%Y-%m-%d %H:%M:%S'),))
-    
-    rows = cursor.fetchall()
-    if not rows:
-        return "No news to summarize"
-    
-    article_ids = [r[0] for r in rows]
-    summaries = [r[1] for r in rows]
-    
-    final_summary, model_used = summarize_6h_period(summaries)
-    
-    cursor.execute("""
-                   INSERT INTO time_summaries (summary, model_used, start_time, end_time, created_at)
-                   VALUES (?, ?, ?, ?, ?)
-                   """, (final_summary, model_used, start_time.isoformat()), end_time.isoformat(), now_utc.isoformat())
-    
-    time_summary_id = cursor.lastrowid
-    
-    for aid in article_ids:
-        cursor.execute("""
-                       INSERT INTO time_summary_articles (time_summary_id, article_id)
-                       VALUES (?, ?)
-                       """, (time_summary_id, aid))
+    with get_connection() as conn:
+        cursor = conn.cursor()
         
-    conn.commit()
-    conn.close()
+        end_time = datetime.now(timezone.utc)
+        start_time = end_time - timedelta(hours=6)
+        now_utc = datetime.now(timezone.utc)
+        
+        cursor.execute("""
+                    SELECT a.id, s.summary
+                    FROM articles a
+                    JOIN summaries s ON a.id = s.article_id
+                    WHERE a.published_at >= ?
+                    """, (start_time.strftime('%Y-%m-%d %H:%M:%S'),))
+        
+        rows = cursor.fetchall()
+        if not rows:
+            return "No news to summarize"
+        
+        article_ids = [r[0] for r in rows]
+        summaries = [r[1] for r in rows]
+        
+        final_summary, model_used = summarize_6h_period(summaries)
+        
+        cursor.execute("""
+                    INSERT INTO time_summaries (summary, model_used, start_time, end_time, created_at)
+                    VALUES (?, ?, ?, ?, ?)
+                    """, (final_summary, model_used, start_time.isoformat()), end_time.isoformat(), now_utc.isoformat())
+        
+        time_summary_id = cursor.lastrowid
+        
+        for aid in article_ids:
+            cursor.execute("""
+                        INSERT INTO time_summary_articles (time_summary_id, article_id)
+                        VALUES (?, ?)
+                        """, (time_summary_id, aid))
+            
+        conn.commit()
+        conn.close()
     return "Summary saved"
