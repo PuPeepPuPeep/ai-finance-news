@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.jobs.scheduler import scheduler
 from app.api.routes import router
+from app.db.db import init_db
 import os
 import logging
 
@@ -13,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    init_db()
+    logger.info("Initializing Database")
     scheduler.start()
     logger.info("Scheduler started!")
     yield
