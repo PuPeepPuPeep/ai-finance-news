@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react"
 import { FaBars, FaGithub } from "react-icons/fa"
 import { AiOutlineClose } from "react-icons/ai"
 import { BsThreeDotsVertical } from "react-icons/bs"
+import API_BASE_URL from "../services/api"
 
 function Header({ activeTopic, onSelectTopic }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -15,7 +16,7 @@ function Header({ activeTopic, onSelectTopic }) {
     const dropdownRef = useRef(null)
 
     useEffect(() => {
-        fetch("http://localhost:8000/topics")
+        fetch(`${API_BASE_URL}/topics`)
         .then((res) => res.json())
         .then((data) => setTopics(["Latest", ...data]))
         .catch((err) => console.error("Error feching topics:", err))
