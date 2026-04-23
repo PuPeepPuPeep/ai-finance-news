@@ -3,11 +3,11 @@ import axios from "axios"
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 export const getNews = async (topic) => {
-    const url = (topic && topic !== 'All')
-    ? `${API_BASE_URL}/news?topic=${topic}`
-    : `${API_BASE_URL}/news`
-
-    const response = await axios.get(url)
+    const config = {
+        params: (topic && topic !== 'All') ? { topic: topic } : {}
+    }
+    
+    const response = await axios.get(`${API_BASE_URL}/news`, config)
     return response.data
 }
 
