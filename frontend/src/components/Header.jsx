@@ -52,7 +52,7 @@ function Header({ activeTopic, onSelectTopic }) {
     }, [topics])
 
     useEffect(() => {
-        const handleClickOutside = (enent) => {
+        const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setIsDropdownOpen(false)
             }
