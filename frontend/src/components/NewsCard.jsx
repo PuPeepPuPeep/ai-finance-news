@@ -45,11 +45,14 @@ function NewsCard({data}) {
             <div className="border-t border-slate-200 pt-4 mt-auto">
                 <div className="flex justify-between items-center mb-3">
                     <span className="text-xs text-slate-400">
-                        {new Date(data.published_at).toLocaleString('th-TH', {
-                            dateStyle: 'medium',
-                            timeStyle: 'short',
-                            timeZone: 'Asia/Bangkok'
-                        })}
+                        {data.published_at
+                            ? new Date(data.published_at).toLocaleString('th-TH', {
+                                dateStyle: 'medium',
+                                timeStyle: 'short',
+                                timeZone: 'Asia/Bangkok'
+                            })
+                            : '-'
+                        }
                     </span>
 
                     {data.model_used && (
