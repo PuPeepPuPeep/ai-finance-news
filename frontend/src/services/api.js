@@ -11,11 +11,6 @@ export const getNews = async (topic) => {
     return response.data
 }
 
-export const getNewsDetail = async (id) => {
-    const response = await axios.get(`${API_BASE_URL}/news/${id}`)
-    return response.data
-}
-
 export const getTimeSummary = async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/news/summary-6h`)
