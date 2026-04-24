@@ -1,5 +1,5 @@
 function TimeSummary({ data }) {
-    if (!data.summary) return null
+    if (!data || !data.summary) return null
 
     return (
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-6 mb-8 shadow-sm">
