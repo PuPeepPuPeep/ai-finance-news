@@ -37,7 +37,7 @@ def get_lastest_6h_summary():
     return {
         "summary": "ยังไม่มีสรุป",
         "created_at": None,
-        "medel_used": None
+        "model_used": None
 
     }
 
