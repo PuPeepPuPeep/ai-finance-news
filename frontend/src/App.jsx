@@ -38,8 +38,8 @@ function App() {
         </header>
         
         <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          {news.map((news) => (
-            <NewsCard key={news.id} data={news}/>
+          {news.map((item) => (
+            <NewsCard key={item.id} data={item}/>
           ))}
         </div>
       </main>
