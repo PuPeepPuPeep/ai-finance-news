@@ -2,6 +2,16 @@ import axios from "axios"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
+export const getTopics = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/topics`)
+        return response.data
+    } catch (error) {
+        console.error("Error fetching topics:", error)
+        return []
+    }
+}
+
 export const getNews = async (topic) => {
     try {
         const config = {
