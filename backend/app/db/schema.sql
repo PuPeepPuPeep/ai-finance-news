@@ -54,3 +54,8 @@ CREATE TABLE IF NOT EXISTS time_summary_articles (
     FOREIGN KEY (time_summary_id) REFERENCES time_summaries(id) ON DELETE CASCADE,
     FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS idx_articles_published_at ON articles(published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_summaries_article_id ON summaries(article_id);
+CREATE INDEX IF NOT EXISTS idx_article_topics_article_id ON article_topics(article_id);
+CREATE INDEX IF NOT EXISTS idx_article_topics_topic_id ON article_topics(topic_id);

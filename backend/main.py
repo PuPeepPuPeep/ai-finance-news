@@ -7,7 +7,7 @@ from app.db.db import init_db
 import os
 import logging
 
-origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
+origins = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "").split(",") if o.strip()]
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
