@@ -1,11 +1,11 @@
 CREATE TABLE IF NOT EXISTS sources (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     name TEXT UNIQUE,
     rss_url TEXT
 );
 
 CREATE TABLE IF NOT EXISTS articles (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     title TEXT,
     content TEXT,
     url TEXT UNIQUE,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS articles (
 );
 
 CREATE TABLE IF NOT EXISTS summaries (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     summary TEXT,
     sentiment TEXT,
     model_used TEXT,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS summaries (
 );
 
 CREATE TABLE IF NOT EXISTS topics (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     name TEXT UNIQUE
 );
 
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS article_topics (
 );
 
 CREATE TABLE IF NOT EXISTS time_summaries (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     summary TEXT,
     model_used TEXT,
     start_time TEXT,

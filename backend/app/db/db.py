@@ -1,20 +1,16 @@
-import sqlite3
-
-DB_NAME = "news.db"
+import psycopg2
+import psycopg2.extras
+import os
 
 def get_connection():
-    conn = sqlite3.connect(DB_NAME)
-    conn.execute("PRAGMA journal_mode=WAL;")
-    conn.execute("PRAGMA busy_timeout = 10000;") # timeout 10 seconds
-    conn.row_factory = sqlite3.Row
+    conn = psycopg2.connect(os.getenv("DATABASE_URL"))
+    conn.cursor_factory = psycopg2.extras.RealDictCursor
     return conn
 
 def init_db():
-    conn = get_connection()
-    cursor = conn.cursor()
-    
-    with open("app/db/schema.sql", "r") as f:
-        cursor.executescript(f.read())
-        
-    conn.commit()
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        with open("app/db/schema.sql", "r", encoding="utf-8") as f:
+            cursor.execute(f.read())
+        conn.commit()
     conn.close()

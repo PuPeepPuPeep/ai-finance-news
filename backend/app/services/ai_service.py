@@ -5,14 +5,13 @@ import json
 
 load_dotenv()
 
-MODEL_NAME = "gemini-3.1-flash-lite-preview"
+MODEL_NAME = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite-preview")
+STANDARD_TOPICS = ["Fed", "Crypto", "Stock Market", "Inflation", "Gold", "Oil", "Tech", "Banking"]
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
+
 def summarize_text(text: str):
-    
-    standard_topics = ["Fed", "Crypto", "Stock Market", "Inflation", "Gold", "Oil", "Tech", "Banking"]
-    
     prompt = f"""
     คุณคือบรรณาธิการข่าวเศรษฐกิจอาวุโส จงวิเคราะห์ข่าวนี้และตอบกลับในรูปแบบ JSON เท่านั้น
     
@@ -27,7 +26,7 @@ def summarize_text(text: str):
     กฎการเลือกหัวข้อ:
     - summary: สรุปเฉพาะเหตุการณ์และผลกระทบต่อตลาด
     - sentiment: วิเคราะห์แนวโน้มข่าวและตอบเฉพาะคำว่า "บวก", "ลบ" หรือ "เป็นกลาง" เท่านั้น
-    - topics: เลือกจากรายการนี้เป็นหลัก: {", ".join(standard_topics)} หรือสร้างใหม่หากจำเป็น
+    - topics: เลือกจากรายการนี้เป็นหลัก: {", ".join(STANDARD_TOPICS)} หรือสร้างใหม่หากจำเป็น
     
 
     news: {text}
@@ -39,8 +38,11 @@ def summarize_text(text: str):
         config={"response_mime_type": "application/json"}
     )
     
-    #parse string to python dictionary
-    result = json.loads(response.text)
+    try:
+        result = json.loads(response.text)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"AI returned invalid JSON: {e}") from e
+    
     return result, MODEL_NAME
 
 def summarize_6h_period(summaries_list: list):
