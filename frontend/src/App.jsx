@@ -9,14 +9,17 @@ function App() {
   const [news, setNews] = useState([])
   const [selectedTopic, setSelectedTopic] = useState('Latest')
   const [timeSummary, setTimeSummary] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    getNews(selectedTopic).then(data => setNews(data))
+    setIsLoading(true)
+    getNews(selectedTopic)
+      .then(data => setNews(data))
+      .finally(() => setIsLoading(false))
+
     if (selectedTopic === 'Latest'){
       getTimeSummary().then(data => {
-        if (data) {
-          setTimeSummary(data)
-        }
+        if (data) setTimeSummary(data)
       })
     } else {
       setTimeSummary('')
@@ -37,18 +40,20 @@ function App() {
           </h1>
         </header>
         
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-          {news.map((news) => (
-            <NewsCard key={news.id} data={news}/>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className='text-center text-slate-400 py-12'>กำลังโหลด...</div>
+        ) : (
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            {news.map((item) => (
+              <NewsCard key={item.id} data={item} />
+            ))}
+          </div>
+        )}
       </main>
 
-      <Footer/>
-
+      <Footer />
     </div>
   )
-    
 }
 
 export default App

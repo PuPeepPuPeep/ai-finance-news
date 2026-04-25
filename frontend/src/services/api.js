@@ -2,18 +2,27 @@ import axios from "axios"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
-export const getNews = async (topic) => {
-    const config = {
-        params: (topic && topic !== 'All') ? { topic: topic } : {}
+export const getTopics = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/topics`)
+        return response.data
+    } catch (error) {
+        console.error("Error fetching topics:", error)
+        return []
     }
-    
-    const response = await axios.get(`${API_BASE_URL}/news`, config)
-    return response.data
 }
 
-export const getNewsDetail = async (id) => {
-    const response = await axios.get(`${API_BASE_URL}/news/${id}`)
-    return response.data
+export const getNews = async (topic) => {
+    try {
+        const config = {
+            params: (topic && topic !== 'All') ? { topic: topic } : {}
+        }
+        const response = await axios.get(`${API_BASE_URL}/news`, config)
+        return response.data
+    } catch (error) {
+        console.error("Error fetching news:", error)
+        return []
+    }
 }
 
 export const getTimeSummary = async () => {

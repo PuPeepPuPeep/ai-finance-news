@@ -42,14 +42,17 @@ function NewsCard({data}) {
                 {data.summary || "กำลังรอสรุปจาก AI . . ."}
             </div>
 
-            <div className="border-t border-slate-800 pt-4 mt-auto">
+            <div className="border-t border-slate-200 pt-4 mt-auto">
                 <div className="flex justify-between items-center mb-3">
                     <span className="text-xs text-slate-400">
-                        {new Date(data.published_at).toLocaleString('th-TH', {
-                            dateStyle: 'medium',
-                            timeStyle: 'short',
-                            timeZone: 'Asia/Bangkok'
-                        })}
+                        {data.published_at
+                            ? new Date(data.published_at).toLocaleString('th-TH', {
+                                dateStyle: 'medium',
+                                timeStyle: 'short',
+                                timeZone: 'Asia/Bangkok'
+                            })
+                            : '-'
+                        }
                     </span>
 
                     {data.model_used && (
@@ -62,6 +65,7 @@ function NewsCard({data}) {
                 <a 
                 href={data.url} 
                 target="_blank" 
+                rel="noreferrer"
                 className="block w-full text-center py-2 bg-slate-200 hover:bg-slate-300 text-blue-600 rounded-lg text-sm font-medium transition-colors">
                     อ่านฉบับเต็ม
                 </a>
