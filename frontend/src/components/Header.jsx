@@ -24,15 +24,20 @@ function Header({ activeTopic, onSelectTopic }) {
             if (!containerRef.current) return
 
             const containerWidth = containerRef.current.offsetWidth
+            const ITEM_WIDTH = 100
+            const GAP = 8
+            const DROPDOWN_BUTTON_WIDTH = 44
+
+            const availableWidth = containerWidth - DROPDOWN_BUTTON_WIDTH - GAP
+
             let currentWidth = 0
             const newVisible = []
             const newHidden = []
 
             topics.forEach((topic) => {
-                const itemWidth = 100
-                if (currentWidth + itemWidth + 50 < containerWidth) {
+                if (currentWidth + ITEM_WIDTH <= availableWidth) {
                     newVisible.push(topic)
-                    currentWidth += itemWidth
+                    currentWidth += ITEM_WIDTH + GAP
                 } else {
                     newHidden.push(topic)
                 }
@@ -41,6 +46,8 @@ function Header({ activeTopic, onSelectTopic }) {
             setVisibleTopics(newVisible)
             setHiddenTopics(newHidden)
         }
+
+        handleResize()
 
         const observer = new ResizeObserver(handleResize)
         if (containerRef.current) observer.observe(containerRef.current)
