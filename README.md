@@ -50,11 +50,13 @@ VITE_API_BASE_URL=http://127.0.0.1:8000
 
 ต้องมี Docker ติดตั้งในเครื่อง
 
-สร้างไฟล์ `.env` ใน root project
+1. สร้างไฟล์ `.env` ใน root project
 
 ```env
 GEMINI_API_KEY=your_key_here
 ```
+
+2. รัน
 
 ```bash
 docker compose up --build
