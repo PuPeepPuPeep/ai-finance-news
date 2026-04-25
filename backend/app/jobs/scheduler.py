@@ -10,7 +10,7 @@ scheduler.add_job(
     trigger='interval',
     minutes=30,
     name="Main Workflow Job",
-    next_run_time=datetime.now()
+    next_run_time=datetime.now() + timedelta(seconds=30)
 )
 
 scheduler.add_job(

@@ -14,8 +14,9 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info("Initializing Database...")
     init_db()
-    logger.info("Initializing Database")
+    logger.info("Database initialized!")
     scheduler.start()
     logger.info("Scheduler started!")
     yield
