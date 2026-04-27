@@ -2,6 +2,8 @@
 
 เว็บรวมข่าวการเงินจาก CNBC ที่ใช้ AI สรุปและวิเคราะห์ sentiment เป็นภาษาไทย พร้อมสรุปภาพรวมตลาดทุก 6 ชั่วโมง
 
+**[🔴 Live Demo](https://ai-finance-news.vercel.app)**
+
 ## Tech Stack
 
 **Backend**
