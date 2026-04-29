@@ -4,6 +4,12 @@
 
 **[🔴 Live Demo](https://ai-finance-news.vercel.app)**
 
+## Screenshots
+
+| Desktop | Mobile |
+|---------|--------|
+| ![Desktop](docs/screenshots/home.png) | ![Mobile](docs/screenshots/home-mobile.png) |
+
 ## Tech Stack
 
 **Backend**
@@ -131,3 +137,21 @@ npm run dev
 | GET | `/news` | ดึงข่าวล่าสุด (limit 20) |
 | GET | `/news?topic=Crypto` | ดึงข่าวตาม topic (limit 10) |
 | GET | `/news/summary-6h` | ดึงสรุปภาพรวมตลาดล่าสุด |
+
+ดู interactive docs ได้ที่ `/docs`
+
+## Challenges
+
+### 1. Gemini API Rate Limit
+
+Gemini Flash Lite (free tier) จำกัด 15 RPM → ใส่ fixed delay 10 วินาทีระหว่าง request (~6 RPM) เพื่อให้มี buffer ห่างจาก limit
+
+### 2. Gemini 503 High Demand
+
+บางช่วงเวลา Gemini ตอบกลับ 503 "high demand" → ใส่ retry พร้อม exponential backoff เมื่อเจอ 503 โดยมี 3 attempt (รอ 5s → 10s → 20s)
+
+### 3. Database Persistence บน Railway
+
+เริ่มต้นใช้ SQLite เพราะ setup เร็วและไม่ต้องเปิด service เสริม แต่พอ deploy บน Railway ทุกครั้งที่ redeploy ตัว container ถูกสร้างใหม่ → filesystem reset → ข้อมูลข่าวที่สรุปแล้วหายหมด ต้องเรียก Gemini ซ้ำ → migrate ไป PostgreSQL (Railway มี plugin ให้)
+
+> **บทเรียน:** PaaS ส่วนใหญ่ใช้ ephemeral filesystem ต้องคิดเรื่อง persistent storage ตั้งแต่ design แรก
