@@ -8,7 +8,7 @@
 
 | Desktop | Mobile |
 |---------|--------|
-| ![Desktop](docs/screenshots/home.png) | ![Mobile](docs/screenshots/home-mobile.png) |
+| <img src="docs/screenshots/home.png" width="550"> | <img src="docs/screenshots/home-mobile.png" width="220"> |
 
 ## Tech Stack
 
