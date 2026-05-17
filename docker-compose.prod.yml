@@ -1,0 +1,13 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.1-flash-lite}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      AI_REQUEST_DELAY: ${AI_REQUEST_DELAY:-10}
+      AI_ERROR_DELAY: ${AI_ERROR_DELAY:-20}
+    restart: unless-stopped

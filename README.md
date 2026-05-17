@@ -24,7 +24,7 @@
 
 **Infrastructure**
 - Docker + Docker Compose (local)
-- Backend deploy บน Railway
+- Backend deploy บน AWS EC2 + RDS PostgreSQL
 - Frontend deploy บน Vercel
 
 ## การทำงาน
@@ -105,22 +105,64 @@ npm run dev
 
 ## Deploy
 
-### Backend (Railway)
+### Backend (AWS EC2 + RDS)
 
-1. สร้าง project บน [Railway](https://railway.app)
-2. เพิ่ม PostgreSQL: **New → Database → Add PostgreSQL**
-3. เชื่อม GitHub repo → เลือก `backend/` เป็น root directory
-4. ตั้ง environment variables:
-   - `DATABASE_URL` — Railway inject ให้อัตโนมัติจาก PostgreSQL plugin
-   - `GEMINI_API_KEY`
-   - `ALLOWED_ORIGINS` — ใส่ domain Vercel ของ frontend เช่น `https://your-app.vercel.app`
+**AWS Setup:**
+1. สร้าง RDS PostgreSQL (db.t3.micro) — จด Endpoint ไว้
+2. สร้าง EC2 (t3.micro, Amazon Linux 2023) + จอง Elastic IP
+3. เปิด Security Group: port `22`, `80`, `443` สำหรับ EC2 และ port `5432` จาก EC2 สำหรับ RDS
+
+**Deploy บน EC2:**
+```bash
+# ติดตั้ง Docker
+sudo dnf install -y docker
+sudo systemctl enable --now docker
+sudo usermod -a -G docker ec2-user
+
+# ติดตั้ง buildx และ compose plugin
+mkdir -p ~/.docker/cli-plugins
+curl -L "https://github.com/docker/buildx/releases/download/v0.24.0/buildx-v0.24.0.linux-amd64" \
+  -o ~/.docker/cli-plugins/docker-buildx && chmod +x ~/.docker/cli-plugins/docker-buildx
+curl -L "https://github.com/docker/compose/releases/download/v2.36.1/docker-compose-linux-x86_64" \
+  -o ~/.docker/cli-plugins/docker-compose && chmod +x ~/.docker/cli-plugins/docker-compose
+
+# Clone และตั้งค่า
+git clone https://github.com/<your-repo>/ai-finance-news.git
+cd ai-finance-news
+
+# สร้าง database
+psql -h <RDS_ENDPOINT> -U <username> -p 5432 -d postgres -c "CREATE DATABASE newsdb;"
+
+# สร้าง .env
+cat > .env << EOF
+DATABASE_URL=postgresql://user:password@<RDS_ENDPOINT>:5432/newsdb?sslmode=require
+GEMINI_API_KEY=your_key_here
+ALLOWED_ORIGINS=https://your-app.vercel.app
+EOF
+
+# รัน
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+**ตั้งค่า HTTPS ด้วย Nginx + Let's Encrypt:**
+```bash
+sudo dnf install -y nginx python3-certbot-nginx
+sudo systemctl enable --now nginx
+sudo certbot --nginx -d your-domain.duckdns.org
+```
+
+**Deploy ครั้งถัดไป:**
+```bash
+git pull
+docker compose -f docker-compose.prod.yml up -d --build
+```
 
 ### Frontend (Vercel)
 
 1. Import repo บน [Vercel](https://vercel.com)
 2. ตั้ง root directory เป็น `frontend/`
 3. ตั้ง environment variable:
-   - `VITE_API_BASE_URL` — ใส่ URL Railway ของ backend เช่น `https://your-api.railway.app`
+   - `VITE_API_BASE_URL` — ใส่ domain ของ EC2 เช่น `https://your-domain.duckdns.org`
 
 ### Branch Strategy
 
@@ -150,8 +192,8 @@ Gemini Flash Lite (free tier) จำกัด 15 RPM → ใส่ fixed delay 1
 
 บางช่วงเวลา Gemini ตอบกลับ 503 "high demand" → ใส่ retry พร้อม exponential backoff เมื่อเจอ 503 โดยมี 3 attempt (รอ 5s → 10s → 20s)
 
-### 3. Database Persistence บน Railway
+### 3. Database Persistence
 
-เริ่มต้นใช้ SQLite เพราะ setup เร็วและไม่ต้องเปิด service เสริม แต่พอ deploy บน Railway ทุกครั้งที่ redeploy ตัว container ถูกสร้างใหม่ → filesystem reset → ข้อมูลข่าวที่สรุปแล้วหายหมด ต้องเรียก Gemini ซ้ำ → migrate ไป PostgreSQL (Railway มี plugin ให้)
+เริ่มต้นใช้ SQLite เพราะ setup เร็วและไม่ต้องเปิด service เสริม แต่พอ deploy บน PaaS ทุกครั้งที่ redeploy ตัว container ถูกสร้างใหม่ → filesystem reset → ข้อมูลข่าวที่สรุปแล้วหายหมด ต้องเรียก Gemini ซ้ำ → migrate ไป PostgreSQL และย้าย infrastructure จาก Railway ไป AWS EC2 + RDS เพื่อ persistent storage และ free tier ที่ยาวกว่า
 
 > **บทเรียน:** PaaS ส่วนใหญ่ใช้ ephemeral filesystem ต้องคิดเรื่อง persistent storage ตั้งแต่ design แรก
